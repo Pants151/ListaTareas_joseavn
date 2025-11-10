@@ -135,7 +135,7 @@ public class ListadoTareasFr extends Fragment {
             super(binding.getRoot());
             this.binding = binding;
 
-            // TAREA: Navegar a detalles al hacer clic
+            // Navego a detalles al hacer clic
             binding.getRoot().setOnClickListener(v -> {
                 int posicion = getBindingAdapterPosition();
                 if (posicion != RecyclerView.NO_POSITION) {
@@ -145,7 +145,7 @@ public class ListadoTareasFr extends Fragment {
                 }
             });
 
-            // TAREA: Cambiar valoración desde la lista
+            // Cambio valoración desde la lista
             binding.valoracion.setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
                 if (fromUser) {
                     int posicion = getBindingAdapterPosition();
