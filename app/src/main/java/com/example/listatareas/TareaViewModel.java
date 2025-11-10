@@ -10,9 +10,11 @@ import java.util.List;
 
 public class TareaViewModel extends AndroidViewModel {
 
-    TareasRepositorio listTareas;
-    MutableLiveData<List<Tarea>> listTareasMutableLiveData = new MutableLiveData<>();
+    private TareasRepositorio listTareas;
+    private MutableLiveData<List<Tarea>> listTareasMutableLiveData = new MutableLiveData<>();
 
+    // Variable para guardar la tarea seleccionada (para la pantalla de detalle)
+    private MutableLiveData<Tarea> elementoSeleccionado = new MutableLiveData<>();
 
     public TareaViewModel(@NonNull Application application) {
         super(application);
@@ -57,4 +59,12 @@ public class TareaViewModel extends AndroidViewModel {
         });
     }
 
+    // Métodos para gestionar la selección de la tarea
+    public void seleccionar(Tarea tarea) {
+        elementoSeleccionado.setValue(tarea);
+    }
+
+    public MutableLiveData<Tarea> seleccionado() {
+        return elementoSeleccionado;
+    }
 }

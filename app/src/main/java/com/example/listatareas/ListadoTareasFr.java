@@ -9,11 +9,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 
 import com.example.listatareas.databinding.FragmentListadoTareasBinding;
 import com.example.listatareas.databinding.ViewholderElementoBinding;
@@ -25,13 +27,14 @@ public class ListadoTareasFr extends Fragment {
     private FragmentListadoTareasBinding binding;
     private TareaViewModel tareaViewModel;
     private NavController navController;
+    private ElementosAdapter elementosAdapter;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-           return (binding = FragmentListadoTareasBinding.inflate(inflater, container, false)).getRoot();
+        return (binding = FragmentListadoTareasBinding.inflate(inflater, container, false)).getRoot();
 
     }
 
@@ -52,7 +55,7 @@ public class ListadoTareasFr extends Fragment {
         });
 
         // crear el Adaptador
-        ElementosAdapter elementosAdapter = new ElementosAdapter();
+        elementosAdapter = new ElementosAdapter();
 
         // asociar el Adaptador con el RecyclerView
         binding.recyclerView.setAdapter(elementosAdapter);
@@ -65,6 +68,28 @@ public class ListadoTareasFr extends Fragment {
             }
         });
 
+        // TAREA: Implementar Swipe-to-delete
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int posicion = viewHolder.getAdapterPosition();
+                Tarea elemento = elementosAdapter.obtenerElemento(posicion);
+                tareaViewModel.eliminar(elemento);
+            }
+        }).attachToRecyclerView(binding.recyclerView);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     public class ElementosAdapter extends RecyclerView.Adapter<TareaViewHolder> {
@@ -73,7 +98,6 @@ public class ListadoTareasFr extends Fragment {
 
         @NonNull
         @Override
-
         public TareaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new ListadoTareasFr.TareaViewHolder(ViewholderElementoBinding.inflate(getLayoutInflater(), parent, false));
 
@@ -97,6 +121,11 @@ public class ListadoTareasFr extends Fragment {
             this.elementos = elementos;
             notifyDataSetChanged();
         }
+
+        // Método para obtener el elemento en una posición (necesario para swipe)
+        public Tarea obtenerElemento(int posicion) {
+            return elementos.get(posicion);
+        }
     }
 
     class TareaViewHolder extends RecyclerView.ViewHolder {
@@ -105,6 +134,27 @@ public class ListadoTareasFr extends Fragment {
         public TareaViewHolder(ViewholderElementoBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+
+            // TAREA: Navegar a detalles al hacer clic
+            binding.getRoot().setOnClickListener(v -> {
+                int posicion = getBindingAdapterPosition();
+                if (posicion != RecyclerView.NO_POSITION) {
+                    Tarea tarea = elementosAdapter.obtenerElemento(posicion);
+                    tareaViewModel.seleccionar(tarea);
+                    navController.navigate(R.id.action_listadoTareasFr_to_mostrarDetalleTareaFr);
+                }
+            });
+
+            // TAREA: Cambiar valoración desde la lista
+            binding.valoracion.setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
+                if (fromUser) {
+                    int posicion = getBindingAdapterPosition();
+                    if (posicion != RecyclerView.NO_POSITION) {
+                        Tarea tarea = elementosAdapter.obtenerElemento(posicion);
+                        tareaViewModel.actualizar(tarea, rating);
+                    }
+                }
+            });
         }
     }
 }
