@@ -35,13 +35,16 @@ public class NuevaTareaFr extends Fragment {
         tareaViewModel = new ViewModelProvider(requireActivity()).get(TareaViewModel.class);
         navController = Navigation.findNavController(view);
 
-        // Implemento lógica de crear tarea
+        // Implemento la lógica de crear tarea
         binding.crear.setOnClickListener(v -> {
             String nombre = binding.nombre.getText().toString();
             String descripcion = binding.descripcion.getText().toString();
+            // Tarea Extra: Leer la valoración del RatingBar
+            float valoracion = binding.valoracion.getRating();
 
             if (!nombre.isEmpty()) {
-                tareaViewModel.insertar(new Tarea(nombre, descripcion));
+                // Tarea Extra: Usar el nuevo constructor
+                tareaViewModel.insertar(new Tarea(nombre, descripcion, valoracion));
                 navController.popBackStack();
             }
         });

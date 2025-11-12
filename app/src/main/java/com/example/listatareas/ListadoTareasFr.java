@@ -68,7 +68,7 @@ public class ListadoTareasFr extends Fragment {
             }
         });
 
-        // TAREA: Implementar Swipe-to-delete
+        // Con esto implemento el delizar para eliminar la tarea
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
                 ItemTouchHelper.UP | ItemTouchHelper.DOWN,
                 ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {

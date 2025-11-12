@@ -7,6 +7,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ public class MostrarDetalleTareaFr extends Fragment {
     private FragmentMostrarDetalleTareaBinding binding;
     private TareaViewModel tareaViewModel;
     private Tarea tareaSeleccionada;
+    private NavController navController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,13 +36,15 @@ public class MostrarDetalleTareaFr extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         tareaViewModel = new ViewModelProvider(requireActivity()).get(TareaViewModel.class);
+        navController = Navigation.findNavController(view);
 
-        // Busco la tarea seleccionada y muestro sus datos
+        // Observo la tarea seleccionada y mostrar sus datos
         tareaViewModel.seleccionado().observe(getViewLifecycleOwner(), new Observer<Tarea>() {
             @Override
             public void onChanged(Tarea tarea) {
                 if (tarea != null) {
                     tareaSeleccionada = tarea;
+                    // Pongo para que se pueda modificar dicha tarea
                     binding.nombre.setText(tarea.nombre);
                     binding.descripcion.setText(tarea.descripcion);
                     binding.valoracion.setRating(tarea.valoracion);
@@ -53,6 +58,19 @@ public class MostrarDetalleTareaFr extends Fragment {
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 if (fromUser && tareaSeleccionada != null) {
                     tareaViewModel.actualizar(tareaSeleccionada, rating);
+                }
+            }
+        });
+
+        // Añado el boton guardar para las modificaciones
+        binding.guardar.setOnClickListener(v -> {
+            if (tareaSeleccionada != null) {
+                String nuevoNombre = binding.nombre.getText().toString();
+                String nuevaDesc = binding.descripcion.getText().toString();
+
+                if (!nuevoNombre.isEmpty()) {
+                    tareaViewModel.modificar(tareaSeleccionada, nuevoNombre, nuevaDesc);
+                    navController.popBackStack();
                 }
             }
         });

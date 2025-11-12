@@ -20,10 +20,11 @@ public class TareasRepositorio {
 
     public TareasRepositorio()
     {
-        tareas.add(new Tarea("Tarea 1", "Descripción tarea 1"));
-        tareas.add(new Tarea("Tarea 2", "Descripción tarea 2"));
-        tareas.add(new Tarea("Tarea 3", "Descripción tarea 3"));
-        tareas.add(new Tarea("Tarea 4", "Descripción tarea 4"));
+        // Tarea Extra: Añadidas valoraciones por defecto
+        tareas.add(new Tarea("Tarea 1", "Descripción tarea 1", 1f));
+        tareas.add(new Tarea("Tarea 2", "Descripción tarea 2", 4f));
+        tareas.add(new Tarea("Tarea 3", "Descripción tarea 3", 3f));
+        tareas.add(new Tarea("Tarea 4", "Descripción tarea 4", 5f));
 
     }
 
@@ -46,5 +47,10 @@ public class TareasRepositorio {
         callback.notificarCambios(tareas);
     }
 
-
+    // Metodo de modificar el nombre y la descripcion de la tarea
+    void modificar(Tarea elemento, String nuevoNombre, String nuevaDesc, Callback callback) {
+        elemento.nombre = nuevoNombre;
+        elemento.descripcion = nuevaDesc;
+        callback.notificarCambios(tareas);
+    }
 }
